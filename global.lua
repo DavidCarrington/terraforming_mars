@@ -139,7 +139,7 @@ function performResearch()
 	local generation = generation_counter.getValue()
 	local playerCount = playerCount()
 	local research_limit = 4
-	
+
 	if generation == 0 then
 		research_limit = 10
 	end
@@ -157,7 +157,7 @@ function performResearch()
 			end
 			moveGenerationMarker(generation+1)
 			broadcastToAll('Generation ' .. (generation+1) .. ' has begun.', {1,1,1})
-		passFirstPlayerToken()
+			passFirstPlayerToken()
 			resetAllPassGenerationTokens()
 		else
 			rebuildProjectDeckFromDiscardPiles()
