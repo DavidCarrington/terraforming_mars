@@ -79,7 +79,7 @@ function onload ()
 
 	-- Where are all the things?
 	for name, guid in pairs(guids) do
-		things[name] = getObjectFromGUID(guid)
+		findThing(name)
 		if not things[name] then
 			displayError('Failed to find "'.. name ..'" on the board with GUID "' .. guid .. '"')
 		end
@@ -96,6 +96,16 @@ function onload ()
 		height = 400,
 		font_size = 200
 	})	
+end
+
+function findThing(name)
+	local guid = guids[name]
+	if guid then
+		things[name] = getObjectFromGUID(guid)
+	else
+		displayError('No GUID registered for "'.. name)
+	end
+	return things[name]
 end
 
 function performResearchClick()
@@ -182,9 +192,9 @@ end
 
 function dealTenProjectsAndTwoCorporations()
 	local project_deck = findDeckInZone(things['projects'])
-	local corporation_deck = things['corporations']
+	local corporation_deck = findThing('corporations')
 	if not corporation_deck then
-		corporation_deck = things['corporate_era_corporations']
+		corporation_deck = findThing('corporate_era_corporations')
 	end
 	if corporation_deck then
 		corporation_deck.shuffle()
