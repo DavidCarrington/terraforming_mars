@@ -59,7 +59,6 @@ function passFirstPlayerToken()
 		until Player[first_player] and Player[first_player].seated
 	else
 		-- Pick someone at random
-		print('Randomise!')
 		first_player = players[math.random(#players)]
 	end
 	
