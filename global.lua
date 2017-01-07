@@ -31,7 +31,7 @@ project_management_positions = {
 first_player_positions = {
 	White = {p={21.9, 2, -3.6},r={0,90,0},c={1,1,1}},
 	Red = {p={15.6, 2, -17.5},r={0,180,0},c={0.856, 0.1, 0.094}},
-	Yellow = {p={-15.1, 2, -17.6},r={0,180,0},c={0.905, 0.898, 0.172}},
+	Yellow = {p={-15, 2, -17.4},r={0,180,0},c={0.905, 0.898, 0.172}},
 	Green = {p={-14.9, 2, 18.5},r={0,0,0},c={0.192, 0.701, 0.168}},
 	Blue = {p={15.6, 2, 18.5},r={0,0,0},c={0.118, 0.53, 1}}
 }
@@ -191,12 +191,10 @@ function incrementGenerationMarker(generation)
 	local marker = things['generation_marker']
 	local p = marker.getPosition()
 	marker.setRotation({0,0,0})
-	if generation <= 25 then
-		marker.setPosition({p.x, 5, p.z+1.16})
-	elseif generation <= 50 then
-		marker.setPosition({p.x+1.37, 5, p.z})
-	else
-		marker.setPosition({p.x, 5, p.z-1.16})
+	if generation < 25 then
+		marker.setPosition({p.x, 0.5, p.z+1.16})
+	elseif generation < 50 then
+		marker.setPosition({p.x+1.37, 0.5, p.z})
 	end
 end
 
