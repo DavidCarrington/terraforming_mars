@@ -133,10 +133,6 @@ function performResearch()
 	
 	if generation == 0 then
 		research_limit = 10
-		if project_deck then
-			project_deck.shuffle()
-			wait(0.2)
-		end
 	end
 
 	if generation >= 14 and playerCount == 1 then
