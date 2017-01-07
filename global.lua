@@ -1,3 +1,6 @@
+-- Source code history available at 
+-- https://github.com/DavidCarrington/terraforming_mars
+
 guids = {
 	start_button = 'bbd923',
 	generation_counter = '1c4a11',
@@ -7,7 +10,8 @@ guids = {
 	projects = '1ae58d',
 	project_tile = 'b550fe',
 	corporations = 'b17690',
-	corporate_era_corporations = '658e8a'
+	corporate_era_corporations = '658e8a',
+	first_player_token = '2f276a'
 }
 things = {}
 
@@ -24,6 +28,44 @@ project_management_positions = {
 	Green = {-16, 4.5, 35}
 }
 
+first_player_positions = {
+	White = {p={21.9, 2, -3.6},r={0,90,0},c={1,1,1}},
+	Red = {p={15.6, 2, -17.5},r={0,180,0},c={0.856, 0.1, 0.094}},
+	Yellow = {p={-15.1, 2, -17.6},r={0,180,0},c={0.905, 0.898, 0.172}},
+	Green = {p={-14.9, 2, 18.5},r={0,0,0},c={0.192, 0.701, 0.168}},
+	Blue = {p={15.6, 2, 18.5},r={0,0,0},c={0.118, 0.53, 1}}
+}
+
+function passFirstPlayerToken()
+	local token = things['first_player_token']
+	local first_player = token.getDescription()
+	local players = mockGetSeatedPlayers()
+	local player_order = {'White', 'Red', 'Yellow', 'Green', 'Blue'}
+	
+	if string.len(first_player) > 0 then		
+		-- Identify next player
+		-- TODO: find a more graceful way of achieving this!
+		repeat
+			first_player = getNextValueInTable(player_order, first_player)
+		until Player[first_player] and Player[first_player].seated
+	else
+		-- Pick someone at random
+		print('Randomise!')
+		first_player = players[math.random(#players)]
+	end
+	
+	-- Move the token
+	local location = first_player_positions[first_player]
+	token.setPositionSmooth(location.p)
+	token.setRotationSmooth(location.r)
+	
+	-- Announce
+	if playerCount() > 1 then
+		broadcastToAll('First player is ' .. first_player, location.c)
+	end
+	token.setDescription(first_player)
+end
+
 function onload ()
 	-- Where are all the things?
 	for name, guid in pairs(guids) do
@@ -32,7 +74,7 @@ function onload ()
 			displayError('Failed to find "'.. name ..'" on the board with GUID "' .. guid .. '"')
 		end
 	end
-
+	
 	-- Create the Research button
 	things['start_button'].createButton({
 		click_function = 'performResearchClick',
@@ -43,20 +85,26 @@ function onload ()
 		width = 800,
 		height = 400,
 		font_size = 200
-	})
+	})	
+end
+
+function performResearchClick()
+	startLuaCoroutine(Global, 'performResearch')
 end
 
 function rebuildProjectDeckFromDiscardPiles()
 	local project_area = things['project_tile']
 	local discard_one = findDeckInZone(things['discard_one'])
 	local discard_two = findDeckInZone(things['discard_two'])
+	local discard_count = 0
 	if discard_one then
+		discard_count = discard_one.getQuantity()
 		combineDecks(discard_one, project_area)
 	end
 	if discard_two then
 		combineDecks(discard_two, project_area)
 	end
-
+	
 	wait(0.2)
 	local project_deck = findDeckInZone(things['projects'])
 	if project_deck and project_deck.getQuantity() > cards_required then
@@ -76,17 +124,13 @@ function combineDecks(source, destination)
 	source.setPosition(destination.getPosition())
 end
 
-function performResearchClick()
-	startLuaCoroutine(Global, 'performResearch')
-end
-
 function performResearch()
 	local project_deck = findDeckInZone(things['projects'])
 	local generation_counter = things['generation_counter'].Counter
 	local generation = generation_counter.getValue()
 	local playerCount = playerCount()
 	local research_limit = 4
-
+	
 	if generation == 0 then
 		research_limit = 10
 		if project_deck then
@@ -108,6 +152,7 @@ function performResearch()
 			end
 			incrementGenerationMarker(generation)
 			broadcastToAll('Generation ' .. (generation+1) .. ' has begun.', {1,1,1})
+			passFirstPlayerToken()
 		else
 			rebuildProjectDeckFromDiscardPiles()
 		end
@@ -132,7 +177,7 @@ function dealTenProjectsAndTwoCorporations()
 			end
 		end
 	end
-
+	
 	-- Two corporations...
 	local corporation_deck = things['corporations']
 	if not corporation_deck then
@@ -160,23 +205,45 @@ function incrementGenerationMarker(generation)
 end
 
 function playerCount()
-	local T = getSeatedPlayers()
+	local T = mockGetSeatedPlayers()
 	local count = 0
 	for _ in pairs(T) do count = count + 1 end
 	return count
 end
 
 function findDeckInZone(zone)
-	local objectsInZone = zone.getObjects()
-	for i, object in ipairs(objectsInZone) do
-		if object.tag == "Deck" then
-			return object
-		end
-	end
-	return nil
+    local objectsInZone = zone.getObjects()
+    for i, object in ipairs(objectsInZone) do
+        if object.tag == "Deck" then
+            return object
+        end
+    end
+    return nil
 end
 
 function wait(time)
 	local start = os.time()
 	repeat coroutine.yield(0) until os.time() > start + time
+end
+
+function getNextValueInTable( t, value )
+	local first = nil
+	local found = false
+	for k,v in pairs(t) do
+		if not first then
+			first = v
+		end
+		if found then
+			return v
+		end
+		if v == value then
+			found = true
+		end
+	end
+	return first
+end
+
+function mockGetSeatedPlayers()
+	-- return {'Red', 'Yellow', 'White', 'Green', 'Blue'}
+	return getSeatedPlayers()
 end
