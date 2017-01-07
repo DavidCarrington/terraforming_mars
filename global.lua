@@ -121,7 +121,7 @@ function rebuildProjectDeckFromDiscardPiles()
 		wait(0.2)
 		performResearch()
 	else
-		diplayError('Failed making a new project deck. Are the discard piles empty?')
+		displayError('Failed making a new project deck. Are the discard piles empty?')
 	end
 	return 1
 end
@@ -155,7 +155,7 @@ function performResearch()
 			else
 				project_deck.dealToAll(research_limit)
 			end
-			incrementGenerationMarker(generation)
+			incrementGenerationMarker(generation+1)
 			broadcastToAll('Generation ' .. (generation+1) .. ' has begun.', {1,1,1})
 		passFirstPlayerToken()
 			resetAllPassGenerationTokens()
@@ -211,7 +211,7 @@ function dealTenProjectsAndTwoCorporations()
 	end
 end
 
-function isPlayerHoldingAnything(player)
+function isPlayerHandEmpty(player)
 	local objects = Player[player].getHandObjects()
 	return not getNextValueInTable(objects)
 end
@@ -220,11 +220,12 @@ function incrementGenerationMarker(generation)
 	local marker = things['generation_marker']
 	local p = marker.getPosition()
 	marker.setRotation({0,0,0})
-	if generation < 25 then
-		marker.setPosition({p.x, 0.5, p.z+1.16})
-	elseif generation < 50 then
-		marker.setPosition({p.x+1.37, 0.5, p.z})
+	if generation <= 25 then
+		p = {-16.9, 1.4, -13.9 + (generation * 1.16)}
+	elseif generation <= 50 then
+		p = {-16.9 + ((generation-25) * 1.37), 1.4, 15.1}
 	end
+	marker.setPositionSmooth(p)
 end
 
 function playerCount()
