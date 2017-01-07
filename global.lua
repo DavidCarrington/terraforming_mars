@@ -13,6 +13,15 @@ guids = {
 	corporate_era_corporations = '658e8a',
 	first_player_token = '2f276a'
 }
+
+rockets_guids = { -- these GUIDs are from state 2
+	Red = 'c71edc',
+	Yellow = '1290fb',
+	Green = '6fbe62',
+	Blue = 'da0da0',
+	White = '6a16d5'
+}
+
 things = {}
 
 discardPile_x = -21
@@ -147,12 +156,23 @@ function performResearch()
 			end
 			incrementGenerationMarker(generation)
 			broadcastToAll('Generation ' .. (generation+1) .. ' has begun.', {1,1,1})
-			passFirstPlayerToken()
+		passFirstPlayerToken()
+			resetAllPassGenerationTokens()
 		else
 			rebuildProjectDeckFromDiscardPiles()
 		end
 	end
 	return 1
+end
+
+function resetAllPassGenerationTokens()
+	local rocket
+	for _, guid in pairs(rockets_guids) do
+		rocket = getObjectFromGUID(guid)
+		if rocket then
+			rocket.setState(1)
+		end
+	end
 end
 
 function displayError(message)
