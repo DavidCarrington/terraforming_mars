@@ -96,9 +96,8 @@ function rebuildProjectDeckFromDiscardPiles()
 	local project_area = things['project_tile']
 	local discard_one = findDeckInZone(things['discard_one'])
 	local discard_two = findDeckInZone(things['discard_two'])
-	local discard_count = 0
+
 	if discard_one then
-		discard_count = discard_one.getQuantity()
 		combineDecks(discard_one, project_area)
 	end
 	if discard_two then
@@ -161,30 +160,39 @@ function displayError(message)
 end
 
 function dealTenProjectsAndTwoCorporations()
-	-- Ten projects...
 	local project_deck = findDeckInZone(things['projects'])
+	local corporation_deck = things['corporations']
+	if not corporation_deck then
+		corporation_deck = things['corporate_era_corporations']
+	end
+	if corporation_deck then
+		corporation_deck.shuffle()
+		wait(0.5)
+	else
+		displayError('Could not find a deck of corporations to deal out :(')
+	end
+
 	for colour, player_position in pairs(project_management_positions) do
 		if Player[colour].seated then
-			for i = 1, 10, 1 do
+			-- 10 projects
+			for _ = 1, 10, 1 do
 				project_deck.takeObject({
 					position = player_position,
 					flip = true
 				});
 			end
+
+			-- 2 corporation cards - only if their hand is empty
+			if isPlayerHandEmpty(colour) then
+				corporation_deck.dealToColor(2, colour)
+			end
 		end
 	end
-	
-	-- Two corporations...
-	local corporation_deck = things['corporations']
-	if not corporation_deck then
-		corporation_deck = things['corporate_era_corporations']
-	end
-	if not corporation_deck then
-		displayError('Could not find a deck of corporations to deal out :(')
-	end
-	corporation_deck.shuffle()
-	wait(0.5)
-	corporation_deck.dealToAll(2)
+end
+
+function isPlayerHoldingAnything(player)
+	local objects = Player[player].getHandObjects()
+	return not getNextValueInTable(objects)
 end
 
 function incrementGenerationMarker(generation)
@@ -207,7 +215,7 @@ end
 
 function findDeckInZone(zone)
     local objectsInZone = zone.getObjects()
-    for i, object in ipairs(objectsInZone) do
+    for _, object in ipairs(objectsInZone) do
         if object.tag == "Deck" then
             return object
         end
@@ -221,9 +229,9 @@ function wait(time)
 end
 
 function getNextValueInTable( t, value )
-	local first = nil
+	local first
 	local found = false
-	for k,v in pairs(t) do
+	for _,v in pairs(t) do
 		if not first then
 			first = v
 		end
