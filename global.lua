@@ -76,6 +76,8 @@ function passFirstPlayerToken()
 end
 
 function onload ()
+	math.randomseed( os.time() )
+
 	-- Where are all the things?
 	for name, guid in pairs(guids) do
 		things[name] = getObjectFromGUID(guid)
