@@ -155,7 +155,7 @@ function performResearch()
 			else
 				project_deck.dealToAll(research_limit)
 			end
-			incrementGenerationMarker(generation+1)
+			moveGenerationMarker(generation+1)
 			broadcastToAll('Generation ' .. (generation+1) .. ' has begun.', {1,1,1})
 		passFirstPlayerToken()
 			resetAllPassGenerationTokens()
@@ -216,7 +216,7 @@ function isPlayerHandEmpty(player)
 	return not getNextValueInTable(objects)
 end
 
-function incrementGenerationMarker(generation)
+function moveGenerationMarker(generation)
 	local marker = things['generation_marker']
 	local p = marker.getPosition()
 	marker.setRotation({0,0,0})
