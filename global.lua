@@ -169,7 +169,7 @@ function dealTenProjectsAndTwoCorporations()
 	local project_deck = findDeckInZone(things['projects'])
 	for colour, player_position in pairs(project_management_positions) do
 		if Player[colour].seated then
-			for i = 0, 10, 1 do
+			for i = 1, 10, 1 do
 				project_deck.takeObject({
 					position = player_position,
 					flip = true
