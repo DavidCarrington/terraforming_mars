@@ -11,7 +11,8 @@ guids = {
 	project_tile = 'b550fe',
 	corporations = 'b17690',
 	corporate_era_corporations = '658e8a',
-	first_player_token = '2f276a'
+	first_player_token = '2f276a',
+	discard_one_token = 'f7e628'
 }
 
 rockets_guids = { -- these GUIDs are from state 2
@@ -98,6 +99,10 @@ function onload ()
 	})	
 end
 
+function findThingByTable(table)
+	return findThing(table['name'])
+end
+
 function findThing(name)
 	local guid = guids[name]
 	if guid then
@@ -134,6 +139,13 @@ function rebuildProjectDeckFromDiscardPiles()
 		displayError('Failed making a new project deck. Are the discard piles empty?')
 	end
 	return 1
+end
+
+function combineDecksByTable(table)
+	return combineDecks(
+		table.source,
+		table.destination
+	)
 end
 
 function combineDecks(source, destination)
