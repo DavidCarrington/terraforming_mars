@@ -97,10 +97,8 @@ end
 function onload ()
 	math.randomseed( os.time() )
 
-	local object
 	for _, guid in pairs(uninteractable_guids) do
-		object = getObjectFromGUID(guid)
-		object.interactable = false
+		getObjectFromGUID(guid).interactable = false
 	end
 
 	-- Where are all the things?
