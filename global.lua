@@ -23,6 +23,25 @@ rockets_guids = { -- these GUIDs are from state 2
 	White = '6a16d5'
 }
 
+uninteractable_guids = {
+	'7db564',
+	'5458b5',
+	'5c06aa',
+	'fab25e',
+	'94efa5',
+	'b1cfa0',
+	'c48e12',
+	'583d53',
+	'75192e',
+	'31b4c1',
+	'781713',
+	'ca277c',
+	'd38f51',
+	'9ccd79',
+	'988125',
+	'97dd84'
+}
+
 things = {}
 
 discardPile_x = -21
@@ -77,6 +96,12 @@ end
 
 function onload ()
 	math.randomseed( os.time() )
+
+	local object
+	for _, guid in pairs(uninteractable_guids) do
+		object = getObjectFromGUID(guid)
+		object.interactable = false
+	end
 
 	-- Where are all the things?
 	for name, guid in pairs(guids) do
