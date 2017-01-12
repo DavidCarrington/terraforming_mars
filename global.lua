@@ -14,10 +14,6 @@ guids = {
 	first_player_token = '2f276a',
 	discard_one_token = 'f7e628'
 }
-	--[[city_bag = 'f38446'
-	city_tile = '363d9f'
-	greenery_bag = 'e4c505'
-	greenery_tile = 'e93ab9'--]]
 
 rockets_guids = { --these GUIDs are from state 2
 	Red = 'c71edc',
